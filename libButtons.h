@@ -5,8 +5,8 @@
  *      Author: v_
  */
 
-#ifndef INC_BUTTONS_H_
-#define INC_BUTTONS_H_
+#ifndef INC_LIBBUTTONS_H_
+#define INC_LIBBUTTONS_H_
 
 #include <string.h>
 #include "main.h"
@@ -57,4 +57,4 @@ HAL_StatusTypeDef 	btns_init		(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef 
 void	 			btns_check		(Buttons_HandleTypeDef *hbuttons);
 void 				btns_callback	(uint16_t mask, uint8_t press_duration_s);
 
-#endif /* INC_BUTTONS_H_ */
+#endif /* INC_LIBBUTTONS_H_ */
