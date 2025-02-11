@@ -24,7 +24,7 @@ static uint8_t 	hold_1s_cnt = 0; 						/*!< Count of the actual number of button
 //static uint8_t 	hold_5s_count = 0; 						/*!< Count of the actual number of buttons, increased with each successful button register */
 //static uint8_t 	hold_10s_count = 0; 					/*!< Count of the actual number of buttons, increased with each successful button register */
 
-uint32_t shared_mask, shared_press_type;
+uint32_t shared_mask, shared_press_duration;
 
 
 /*
@@ -70,7 +70,7 @@ static HAL_StatusTypeDef btns_timer_start(Buttons_HandleTypeDef *hbtns) {
 		 * Clear pending interrupt flag first
 		 * otherwise IT would occur immediately after the start
 		 */
-		FIX_TIMER_TRIGGER(hbtns->htim);
+//		FIX_TIMER_TRIGGER(hbtns->htim);
 		timer_status += HAL_TIM_Base_Start_IT(hbtns->htim);
 
 		timer_status += HAL_TIM_OC_Start_IT(hbtns->htim, TIM_CHANNEL_1);
@@ -95,8 +95,8 @@ void btns_check(Buttons_HandleTypeDef *hbtns) {
 		if (hbtns->state_current == PRESSED) {
 			btns_state_set(hbtns, PRESSED);
 		} else {
-			if (hbtns->hold_s < 2) {
-				btns_callback(hbtns->pressed_btns_mask, hbtns->hold_s);
+			if (hbtns->hold_s < 1) {
+				btns_callback(hbtns->pressed_btns_mask, 0);//hbtns->hold_s);
 			}
 			btns_state_set(hbtns, RELEASED);
 		}
@@ -121,7 +121,7 @@ void btns_check(Buttons_HandleTypeDef *hbtns) {
 /*
  * @brief	Set defaults, add timer handle and start it
  */
-HAL_StatusTypeDef btns_init(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef user_buttons[], uint8_t num_of_buttons, TIM_HandleTypeDef *htim, State_TypeDef default_state) {
+HAL_StatusTypeDef btns_init(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef user_buttons[], uint8_t num_of_buttons, TIM_HandleTypeDef *htim, State_TypeDef init_state) {
 	assert_param(hbtns 			== NULL);
 	assert_param(user_buttons 	== NULL);
 	assert_param(htim 			== NULL);
@@ -148,7 +148,7 @@ HAL_StatusTypeDef btns_init(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef use
 	 * Set default state to prevent false detection on start.
 	 * For example, when buttons are initialized with power button pressed.
 	 */
-	btns_state_set(hbtns, default_state);
+	btns_state_set(hbtns, init_state);
 
 	/*
 	 * Set max count for long presses, e.g. 1000ms/50ms = 20
@@ -164,16 +164,24 @@ HAL_StatusTypeDef btns_init(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef use
 	return btns_timer_start(hbtns);
 }
 
+uint8_t btns_is_pressed(Buttons_HandleTypeDef *hbtns) {
+	return hbtns->state_current == PRESSED;
+}
+
+uint8_t btns_is_released(Buttons_HandleTypeDef *hbtns) {
+	return hbtns->state_current == RELEASED;
+}
+
 /**
  * @brief  Period elapsed callback in non-blocking mode
  * @param  hbtns Buttons handle (struct)
  * @retval None
  */
-__weak void btns_callback(uint16_t mask, PressType_TypeDef press_type)
+__weak void btns_callback(uint16_t mask, uint32_t press_duration_s)
 {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(mask);
-	UNUSED(press_type);
+	UNUSED(press_duration_s);
 
 	/* NOTE : This function should not be modified, when the callback is needed,
             the buttonsCallback could be implemented in the user file

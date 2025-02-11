@@ -16,7 +16,7 @@
 #define MAX_NUMBER_OF_BUTTONS	15	// 15 is max because "mask" is a 16-bit variable
 #define MAX_NAME_LENGTH			20
 
-extern uint32_t shared_mask, shared_press_type;
+extern uint32_t shared_mask, shared_press_duration;
 
 typedef enum {
 	RELEASED,
@@ -29,6 +29,7 @@ typedef enum {
 	NUM_OF_PRESS_TYPES
 } PressType_TypeDef;
 
+//#pragma pack(push, 1)
 typedef struct {
 	char				name[MAX_NAME_LENGTH];				/*!< Button name (its purpose), for e.g. "Down    "				*/
 	GPIO_TypeDef*		port;
@@ -50,11 +51,15 @@ typedef struct {
 	State_TypeDef 				state_current;					/*!< Pressed or Released current state of all buttons			*/
 	State_TypeDef 				state_previous;					/*!< Pressed or Released previous state of all buttons			*/
 	uint8_t 					hold_s;							/*!< Current amount of seconds a button has been pressed for	*/
+//	uint32_t 					recent_tick;							/*!< Current amount of seconds a button has been pressed for	*/
 	TIM_HandleTypeDef			*htim;							/*!< Button timer (e.g. &htim1)									*/
 } Buttons_HandleTypeDef;
+//#pragma pack(pop)
 
 HAL_StatusTypeDef 	btns_init		(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef user_buttons[], uint8_t num_of_buttons, TIM_HandleTypeDef *htim, State_TypeDef default_state);
 void	 			btns_check		(Buttons_HandleTypeDef *hbuttons);
-void 				btns_callback	(uint16_t mask, uint8_t press_duration_s);
+void 				btns_callback	(uint16_t mask, uint32_t press_duration_s);
+uint8_t 			btns_is_pressed	(Buttons_HandleTypeDef *hbtns);
+uint8_t 			btns_is_released(Buttons_HandleTypeDef *hbtns);
 
 #endif /* INC_LIBBUTTONS_H_ */
