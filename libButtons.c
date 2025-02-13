@@ -99,7 +99,6 @@ void btns_check(Buttons_HandleTypeDef *hbtns) {
 			if (hbtns->hold_s < 1) {
 				btns_callback(hbtns->pressed_btns_mask, 0);//hbtns->hold_s);
 			}
-//			cnt = 0;
 			btns_state_set(hbtns, RELEASED);
 		}
 	} else {
@@ -112,6 +111,7 @@ void btns_check(Buttons_HandleTypeDef *hbtns) {
 		if(hbtns->state_previous == PRESSED) {
 			if(++cnt > hold_1s_cnt) {
 				++hbtns->hold_s;
+				cnt = 0;
 				btns_callback(hbtns->pressed_btns_mask, hbtns->hold_s);
 			}
 		}
