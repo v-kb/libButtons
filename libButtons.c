@@ -137,8 +137,7 @@ HAL_StatusTypeDef btns_init(Buttons_HandleTypeDef *hbtns, Button_InitTypeDef use
 	 * Register button parameters and fill additional fields
 	 */
 	for(int id = 0; id < num_of_buttons; ++id) {
-		strcpy(hbtns->list[id].name, user_buttons[id].name);		// Copy name
-		hbtns->list[id].mask			= 1 << id;					// Create unique bitmask
+		hbtns->list[id].mask			= user_buttons[id].mask;
 		hbtns->list[id].port 			= user_buttons[id].port;
 		hbtns->list[id].pin 			= user_buttons[id].pin;
 		hbtns->list[id].state_active 	= user_buttons[id].state_active;

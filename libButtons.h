@@ -14,7 +14,6 @@
 #define FIX_TIMER_TRIGGER(handle_ptr) 	(__HAL_TIM_CLEAR_FLAG(handle_ptr, TIM_SR_UIF))
 
 #define MAX_NUMBER_OF_BUTTONS	15	// 15 is max because "mask" is a 16-bit variable
-#define MAX_NAME_LENGTH			20
 
 extern uint32_t shared_mask, shared_press_duration;
 
@@ -31,7 +30,7 @@ typedef enum {
 
 //#pragma pack(push, 1)
 typedef struct {
-	char				name[MAX_NAME_LENGTH];				/*!< Button name (its purpose), for e.g. "Down    "				*/
+	uint16_t			mask;					/*!< Button name (its purpose), for e.g. "Down    "				*/
 	GPIO_TypeDef*		port;
 	uint16_t 			pin;
 	GPIO_PinState 		state_active;			/*!< State of a button when is it activated by user				*/
@@ -39,7 +38,6 @@ typedef struct {
 
 typedef struct {
 	struct {													/*!< List of registered buttons									*/
-		char				name[MAX_NAME_LENGTH];				/*!< Button name (its purpose), for e.g. "Down    "				*/
 		uint16_t			mask;								/*!< List of currently pressed buttons presented as bitmask		*/
 		GPIO_TypeDef*		port;
 		uint16_t 			pin;
